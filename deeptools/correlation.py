@@ -79,7 +79,7 @@ class Correlation:
                                                          "to length of matrix samples"
 
     @staticmethod
-    def get_outlier_indices(data, max_deviation=200):
+    def get_outlier_indices(data, max_deviation=50):
         """
         The method is based on the median absolute deviation. See
         Boris Iglewicz and David Hoaglin (1993),
@@ -108,18 +108,17 @@ class Correlation:
             outliers = np.flatnonzero(deviation > max_deviation)
         return outliers
 
-    def remove_outliers(self, verbose=True):
+    def remove_outliers(self, max_deviation=50, verbose=True):
         """
         get the outliers *per column* using the median absolute
         deviation method
 
         Returns the filtered matrix
         """
-
         unfiltered = len(self.matrix)
         to_remove = None
         for col in self.matrix.T:
-            outliers = self.get_outlier_indices(col)
+            outliers = self.get_outlier_indices(col, max_deviation=max_deviation)
             if to_remove is None:
                 to_remove = set(outliers)
             else:
@@ -462,3 +461,22 @@ class Correlation:
         plt.subplots_adjust(top=3.85)
         plt.tight_layout()
         plt.savefig(plot_filename, format=image_format, bbox_extra_artists=(lgd,), bbox_inches='tight')
+
+    def plot_fingerprint(self, plot_filename, plot_title='', image_format=None):
+        total = len(self.matrix[:, 0])
+        x = np.arange(total).astype('float') / total  # normalize from 0 to 1
+
+        i = 0
+        for reads in self.matrix.T:
+            count = np.cumsum(np.sort(reads))
+            count = count / count[-1]  # to normalyze y from 0 to 1
+            plt.plot(x, count, label=self.labels[i])
+            plt.xlabel('rank')
+            plt.ylabel('cumulative fraction w.r.t. bin\nwith highest coverage')
+            i += 1
+        plt.legend(loc='upper left', fancybox=True, framealpha=0.5)
+        plt.suptitle(plot_title)
+        # set the plotFileFormat explicitly to None to trigger the
+        # format from the file-extension
+        plt.xlim(0.995, 1)
+        plt.savefig(plot_filename, bbox_inches=0, format=image_format)

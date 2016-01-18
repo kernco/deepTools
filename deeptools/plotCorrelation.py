@@ -99,9 +99,9 @@ def plot_correlation_args():
         '--removeOutliers',
         help='If set, bins with very large counts are removed. '
              'Bins with abnormally high reads counts artificially increase '
-             'pearson correlation; that\'s why, by default, multiBamCoverage tries '
-             'to remove outliers using the median absolute deviation (MAD) '
-             'method applying a threshold of 200 to only consider extremely '
+             'pearson correlation; that\'s why, by default, outliers can '
+             'remobed using the median absolute deviation (MAD) '
+             'method applying a threshold of 50 to only consider extremely '
              'large deviations from the median. The ENCODE blacklist page '
              '(https://sites.google.com/site/anshulkundaje/projects/blacklists) '
              'contains useful information about regions with unusually high counts.',
