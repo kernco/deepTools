@@ -1,4 +1,5 @@
 import multiprocessing
+import random
 
 debug = 0
 
@@ -146,6 +147,7 @@ def mapReduce(staticArgs, func, chromSize,
                    "number of tasks".format(numberOfProcessors,
                                             len(TASKS)))
 
+        random.shuffle(TASKS)
         pool = multiprocessing.Pool(numberOfProcessors)
         res = pool.map_async(func, TASKS).get(9999999)
     else:
